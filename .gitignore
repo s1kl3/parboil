@@ -1,0 +1,6 @@
+*.pyc
+*.o
+/**/build/
+/**/run/
+/datasets
+
