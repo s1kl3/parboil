@@ -1,0 +1,4 @@
+# (c) 2007 The Board of Trustees of the University of Illinois.
+
+LANGUAGE=opencrun
+SRCDIR_OBJS=util.o main.o OpenCL_common.o
