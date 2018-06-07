@@ -16,9 +16,11 @@ RANLIB=ranlib
 OBJS=$(BUILD_DIR)/parboil.o
 OBJS_TWO=$(BUILD_DIR)/parboil_cuda.o
 OBJS_THREE=$(BUILD_DIR)/parboil_opencl.o
+OBJS_FOUR=$(BUILD_DIR)/parboil_opencrun.o
 TARGET=$(BUILD_DIR)/libparboil.a 
 TARGET_TWO=$(BUILD_DIR)/libparboil_cuda.a
 TARGET_THREE=$(BUILD_DIR)/libparboil_opencl.a
+TARGET_FOUR=$(BUILD_DIR)/libparboil_opencrun.a
 
 ifeq ($(CUDA_PATH),)
 TARGET_CUDA=no_cuda
@@ -32,7 +34,13 @@ else
 TARGET_OPENCL=$(BUILD_DIR)/libparboil_opencl.a
 endif
 
-TARGETS=$(TARGET) $(TARGET_CUDA) $(TARGET_OPENCL)
+ifeq ($(OPENCRUN_PATH),)
+TARGET_OPENCRUN=no_opencrun
+else
+TARGET_OPENCRUN=$(BUILD_DIR)/libparboil_opencrun.a
+endif
+
+TARGETS=$(TARGET) $(TARGET_CUDA) $(TARGET_OPENCL) $(TARGET_OPENCRUN)
 
 .PHONY: all clean
 
@@ -48,6 +56,11 @@ no_opencl:
 	@echo OPENCL_PATH is not set in $$PARBOIL_ROOT/common/Makefile.conf. OPENCL ignored. | grep --color OPENCL_PATH
 	@echo
 
+no_opencrun:
+	@echo
+	@echo OPENCRUN_PATH is not set in $$PARBOIL_ROOT/common/Makefile.conf. OPENCRUN ignored. | grep --color OPENCL_PATH
+	@echo
+
 clean:
 	rm -f $(OBJS) $(TARGETS)
 
@@ -60,6 +73,9 @@ $(BUILD_DIR)/parboil_cuda.o : parboil_cuda.c
 $(BUILD_DIR)/parboil_opencl.o : parboil_opencl.c
 	$(CC) -c -g $(CFLAGS) -I$(OPENCL_PATH)/include $^ -o $@
 
+$(BUILD_DIR)/parboil_opencrun.o : parboil_opencrun.c
+	$(CC) -c -g $(CFLAGS) -I$(OPENCRUN_PATH)/include $^ -o $@
+
 $(TARGET) : $(OBJS)
 	$(AR) rc $@ $?
 	$(RANLIB) $@
@@ -71,3 +87,7 @@ $(TARGET_TWO) : $(OBJS_TWO)
 $(TARGET_THREE) : $(OBJS_THREE)
 	$(AR) rc $@ $?
 	$(RANLIB) $@	
+
+$(TARGET_FOUR) : $(OBJS_FOUR)
+ 	$(AR) rc $@ $?
+ 	$(RANLIB) $@
